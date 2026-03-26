@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center py-10">
+  <div class="bg-card rounded-2xl shadow-xl p-10 w-full max-w-lg">
+    <h1 class="text-3xl font-bold text-textdark mb-1">Create an account</h1>
+    <p class="text-sm text-textmuted mb-6">Start booking EV stations instantly and manage all your charging sessions.</p>
+
+    <form method="POST" class="grid gap-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+      <!-- Personal Details -->
+      <div class="col-span-2">
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary mb-2">👤 Personal Details</p>
+      </div>
+
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Full Name</label>
+        <input name="name" required placeholder="e.g. Aravind Kumar"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary mt-1" />
+      </div>
+
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Email</label>
+        <input type="email" name="email" required placeholder="you@example.com"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary mt-1" />
+      </div>
+
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Password</label>
+        <input type="password" name="password" required placeholder="Min. 8 characters"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary mt-1" />
+      </div>
+
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Phone</label>
+        <input name="phone" required placeholder="e.g. 9876543210"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary mt-1" />
+      </div>
+
+      <!-- Vehicle Details -->
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary mb-2 mt-2">⚡ Vehicle Details</p>
+      </div>
+
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Vehicle Type</label>
+        <select name="vehicle_type" required id="vehicleType" onchange="updateModels()"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary mt-1 bg-white">
+          <option value="" disabled selected hidden>Select type</option>
+          <option value="Car">Car</option>
+          <option value="Scooter">Scooter</option>
+          <option value="Motorcycle">Motorcycle</option>
+          <option value="Bus">Bus / Fleet</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Vehicle Model</label>
+        <select name="vehicle_model" required id="vehicleModel"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary mt-1 bg-white">
+          <option value="">Select model</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Connector Type</label>
+        <select name="connector_type"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary mt-1 bg-white">
+          <option value="">Select connector</option>
+          <option value="CCS">CCS (DC Fast)</option>
+          <option value="CHAdeMO">CHAdeMO</option>
+          <option value="Type 2">Type 2 (AC)</option>
+          <option value="AC Level 2">AC Level 2</option>
+          <option value="Bharat AC">Bharat AC (001)</option>
+          <option value="Bharat DC">Bharat DC (001)</option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Number Plate</label>
+        <input name="license_plate" placeholder="e.g. KL 01 AB 1234"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary mt-1" />
+      </div>
+
+      <div class="flex items-start gap-2 text-sm text-textmuted mt-3">
+        <input type="checkbox" name="terms" required class="mt-1" />
+        <span>I agree to the <a href="#" class="text-primary hover:text-darkgreen">terms and conditions</a></span>
+      </div>
+
+      <button type="submit"
+              class="w-full bg-primary hover:bg-darkgreen text-white rounded-lg py-2.5 font-semibold shadow-sm transition-colors">
+        Create Account
+      </button>
+    </form>
+
+    <div class="mt-5 text-center text-sm text-textmuted">Already have an account?
+      <a href="/login" class="font-semibold text-primary hover:text-darkgreen">Login</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const models = {
+  Car: [
+    'Tata Nexon EV', 'Tata Nexon EV Max', 'Tata Tigor EV', 'Tata Punch EV',
+    'MG ZS EV', 'MG Comet EV',
+    'Hyundai Kona Electric', 'Hyundai Ioniq 5', 'Hyundai Ioniq 6',
+    'Kia EV6',
+    'BYD Atto 3', 'BYD Seal',
+    'Mahindra XEV 9e', 'Mahindra BE 6e',
+    'Volvo XC40 Recharge', 'BMW iX', 'BMW i4',
+    'Mercedes-Benz EQC', 'Mercedes-Benz EQS',
+    'Audi e-tron GT', 'Porsche Taycan',
+    'Other'
+  ],
+  Scooter: [
+    'Ola S1 Pro', 'Ola S1 Air', 'Ola S1 X',
+    'Ather 450X', 'Ather 450S', 'Ather Rizta',
+    'TVS iQube S', 'TVS iQube ST',
+    'Bajaj Chetak', 'Bajaj Chetak Premium',
+    'Hero Vida V1 Pro', 'Hero Vida V1 Plus',
+    'Bounce Infinity E1',
+    'Revolt RV1 Plus',
+    'Other'
+  ],
+  Motorcycle: [
+    'Tork Kratos R', 'Tork Kratos',
+    'Revolt RV400 BRZ', 'Revolt RV400',
+    'Ultraviolette F77 Mach 2',
+    'KTM RC-E (Concept)',
+    'Other'
+  ],
+  Bus: [
+    'Tata Ultra Electric Bus', 'Olectra C9', 'JBM Ecolife',
+    'PMI Electro Buses', 'Switch Bus',
+    'Other'
+  ]
+};
+
+function updateModels() {
+  const type = document.getElementById('vehicleType').value;
+  const modelSel = document.getElementById('vehicleModel');
+  modelSel.innerHTML = '<option value="">Select model</option>';
+  if (models[type]) {
+    models[type].forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = m;
+      modelSel.appendChild(opt);
+    });
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard — Plug and Go{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">👋 Welcome, {{ current_user.name }}!</h1>
+  <p class="page-subtitle">Here's a summary of your EV charging activity.</p>
+</div>
+
+{% if pending_bookings %}
+<div class="mb-6 p-4 rounded-xl border border-yellow-200 bg-yellow-50">
+  <h2 class="text-lg font-bold text-yellow-800 mb-3">🕒 Pending Confirmation</h2>
+  <div class="flex flex-col gap-3">
+    {% for b in pending_bookings %}
+      {% set start_hours = b.start_time.hour + (b.start_time.minute / 60) %}
+      {% set end_hours = b.end_time.hour + (b.end_time.minute / 60) %}
+      {% set duration = end_hours - start_hours if end_hours > start_hours else (end_hours - start_hours) + 24 %}
+      <div class="bg-white p-4 rounded-lg border border-yellow-100 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="font-semibold">{{ b.station.name if b.station else 'Unknown Station' }}</p>
+          <p class="text-sm text-gray-600">Date: {{ b.booking_date }} | {{ b.start_time.strftime('%H:%M') }} - {{ b.end_time.strftime('%H:%M') }}</p>
+          <p class="text-sm font-medium mt-1">Total: ₹{{ '%.2f'|format(b.price_per_hour * duration) }}</p>
+        </div>
+        <div class="flex gap-2">
+          <a href="{{ url_for('confirm_booking', booking_id=b.id) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700">Confirm</a>
+          <a href="{{ url_for('cancel_booking', booking_id=b.id) }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm font-semibold hover:bg-gray-300">Cancel</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="dashboard">
+  <div class="card">
+    <h2>My Bookings</h2>
+    <h3>All time</h3>
+    <var>{{ total_bookings }} <abbr>TOTAL</abbr></var>
+  </div>
+
+  <div class="card primary">
+    <h2>Upcoming</h2>
+    <h3>Confirmed slots</h3>
+    <var>{{ upcoming_bookings }} <abbr>SLOTS</abbr></var>
+  </div>
+
+  <div class="card">
+    <h2>Total Spent</h2>
+    <h3>All time</h3>
+    <var>{{ total_spent }} <abbr>INR</abbr></var>
+  </div>
+
+  <div class="card">
+    <h2>Hours Charged</h2>
+    <div class="card-progress">
+      <progress value="{{ charging_progress }}" max="100"></progress>
+      <var>{{ total_hours }}hrs <abbr>THIS MONTH</abbr></var>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Fav Station</h2>
+    <div class="card-icon">
+      <img src="{{ url_for('static', filename='icons/cog.svg') }}">
+      <div>
+        <h3>Most visited</h3>
+        <var style="font-size:16px">{{ fav_station or 'None yet' }}</var>
+      </div>
+      <img src="{{ url_for('static', filename='icons/chevron.svg') }}">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>My Vehicle</h2>
+    <div class="card-icon">
+      <img src="{{ url_for('static', filename='icons/heart.svg') }}">
+      <div>
+        <h3>{{ current_user.vehicle_type }}</h3>
+        <var style="font-size:16px">{{ current_user.vehicle_model }}</var>
+      </div>
+      <img src="{{ url_for('static', filename='icons/chevron.svg') }}">
+    </div>
+  </div>
+</div>
+
+{% endblock %}

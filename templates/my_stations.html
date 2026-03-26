@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}My Stations — Plug and Go{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-textdark font-display">My Registered Stations</h1>
+    <a href="/register-station" class="bg-primary hover:bg-darkgreen text-white font-semibold px-6 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+      <span>➕</span> Add New Station
+    </a>
+  </div>
+
+  {% if stations %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for s in stations %}
+        <div class="bg-card rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-glow transition">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="font-bold text-lg text-textdark">{{ s.name }}</h3>
+            <span class="text-xs font-semibold px-2 py-1 rounded-lg bg-green-100 text-green-700">Active</span>
+          </div>
+          
+          <p class="text-sm text-textmuted mb-4 flex items-center gap-2">
+            <span>📍</span> {{ s.location }}
+          </p>
+          
+          <div class="space-y-2 mb-6">
+            <p class="text-xs text-textmuted">⚡ <strong>Chargers:</strong> {{ s.charger_types }}</p>
+            <p class="text-xs text-textmuted">🔌 <strong>Total Slots:</strong> {{ s.total_slots }}</p>
+          </div>
+
+          <div class="flex gap-2">
+            <a href="/station/{{ s.id }}" class="flex-1 text-center py-2 text-sm font-semibold border border-primary text-primary rounded-lg hover:bg-primary/5">View Details</a>
+            <a href="/admin/stations/edit/{{ s.id }}" class="flex-1 text-center py-2 text-sm font-semibold bg-gray-100 text-textdark rounded-lg hover:bg-gray-200">Edit Settings</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-20 bg-card rounded-2xl border-2 border-dashed border-gray-100">
+      <div class="text-5xl mb-4">🏪</div>
+      <h2 class="text-xl font-bold text-textdark">No stations registered yet</h2>
+      <p class="text-textmuted mt-2 mb-6">Start earning by listing your EV charging station on our platform.</p>
+      <a href="/register-station" class="bg-primary text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition">
+        Register Your First Station
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

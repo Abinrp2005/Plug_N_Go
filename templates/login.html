@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block title %}
+  Login — Plug and Go
+{% endblock %}
+
+{% block content %}
+
+<div style="
+  display         : flex;
+  justify-content : center;
+  align-items     : center;
+  min-height      : 85vh;
+  padding         : 20px;
+">
+  <div style="
+    background    : #122318;
+    border        : 1px solid
+      rgba(22,163,74,0.2);
+    border-radius : 20px;
+    padding       : 44px 40px;
+    width         : 100%;
+    max-width     : 420px;
+    box-shadow    :
+      0 8px 40px rgba(0,0,0,0.4),
+      0 0 0 1px
+      rgba(22,163,74,0.05);
+  ">
+
+    <!-- Logo & Title -->
+    <div style="
+      text-align    : center;
+      margin-bottom : 32px;
+    ">
+      <div style="
+        width         : 60px;
+        height        : 60px;
+        background    : #16a34a;
+        border-radius : 16px;
+        display       : flex;
+        align-items   : center;
+        justify-content: center;
+        font-size     : 28px;
+        margin        : 0 auto 16px;
+        box-shadow    :
+          0 0 20px
+          rgba(22,163,74,0.4);
+      ">⚡</div>
+      <h1 style="
+        color         : #f0fdf4;
+        font-size     : 24px;
+        font-weight   : 700;
+        margin        : 0 0 8px 0;
+        letter-spacing: -0.3px;
+      ">Welcome Back</h1>
+      <p style="
+        color    : #86efac;
+        opacity  : 0.65;
+        font-size: 14px;
+        margin   : 0;
+      ">Sign in to your Plug & Go account
+      </p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages =
+       get_flashed_messages(
+       with_categories=true) %}
+      {% if messages %}
+        {% for category, message
+           in messages %}
+          <div style="
+            padding      : 11px 14px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size    : 13px;
+            font-weight  : 500;
+            {% if category == 'success' %}
+            background:rgba(22,163,74,0.15);
+            color      : #4ade80;
+            border     : 1px solid
+              rgba(22,163,74,0.3);
+            {% elif category == 'error' %}
+            background:rgba(220,38,38,0.15);
+            color      : #f87171;
+            border     : 1px solid
+              rgba(220,38,38,0.3);
+            {% else %}
+            background:rgba(234,179,8,0.15);
+            color      : #fbbf24;
+            border     : 1px solid
+              rgba(234,179,8,0.3);
+            {% endif %}
+          ">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Login Form -->
+    <form method="POST"
+          action="{{ url_for('login') }}">
+
+      <!-- Email Field -->
+      <div style="margin-bottom:20px">
+        <label style="
+          display      : block;
+          color        : #86efac;
+          font-size    : 13px;
+          font-weight  : 500;
+          margin-bottom: 8px;
+          opacity      : 0.85;
+          letter-spacing: 0.3px;
+        ">📧 Email Address</label>
+        <input
+          type        ="email"
+          name        ="email"
+          required
+          autocomplete="email"
+          placeholder ="arjun@example.com"
+          style="
+            width        : 100%;
+            padding      : 12px 14px;
+            background   : #1e4d30;
+            border       : 1px solid
+              rgba(22,163,74,0.2);
+            border-radius: 10px;
+            color        : #f0fdf4;
+            font-size    : 14px;
+            outline      : none;
+            box-sizing   : border-box;
+            font-family  :
+              'Inter', sans-serif;
+            transition   : border 0.2s;
+          "
+          onfocus="
+            this.style.borderColor=
+            '#16a34a';
+            this.style.boxShadow=
+            '0 0 0 3px rgba(22,163,74,0.15)'"
+          onblur="
+            this.style.borderColor=
+            'rgba(22,163,74,0.2)';
+            this.style.boxShadow='none'"/>
+      </div>
+
+      <!-- Password Field -->
+      <div style="margin-bottom:10px">
+        <label style="
+          display      : block;
+          color        : #86efac;
+          font-size    : 13px;
+          font-weight  : 500;
+          margin-bottom: 8px;
+          opacity      : 0.85;
+          letter-spacing: 0.3px;
+        ">🔒 Password</label>
+        <div style="position:relative">
+          <input
+            type        ="password"
+            name        ="password"
+            id          ="passwordInput"
+            required
+            autocomplete="current-password"
+            placeholder ="••••••••"
+            style="
+              width        : 100%;
+              padding      : 12px 44px
+                             12px 14px;
+              background   : #1e4d30;
+              border       : 1px solid
+                rgba(22,163,74,0.2);
+              border-radius: 10px;
+              color        : #f0fdf4;
+              font-size    : 14px;
+              outline      : none;
+              box-sizing   : border-box;
+              font-family  :
+                'Inter', sans-serif;
+              transition   : border 0.2s;
+            "
+            onfocus="
+              this.style.borderColor=
+              '#16a34a';
+              this.style.boxShadow=
+              '0 0 0 3px rgba(22,163,74,0.15)'"
+            onblur="
+              this.style.borderColor=
+              'rgba(22,163,74,0.2)';
+              this.style.boxShadow='none'"/>
+          <!-- Show/hide password -->
+          <button
+            type="button"
+            onclick="togglePassword()"
+            style="
+              position  : absolute;
+              right     : 12px;
+              top       : 50%;
+              transform : translateY(-50%);
+              background: transparent;
+              border    : none;
+              cursor    : pointer;
+              font-size : 16px;
+              padding   : 0;
+              color     : #86efac;
+              opacity   : 0.6;
+            "
+            id="toggleBtn">👁️</button>
+        </div>
+      </div>
+
+      <!-- Forgot Password + Remember Me -->
+      <div style="
+        display         : flex;
+        justify-content : space-between;
+        align-items     : center;
+        margin-bottom   : 28px;
+      ">
+        <label style="
+          display    : flex;
+          align-items: center;
+          gap        : 7px;
+          color      : #86efac;
+          font-size  : 13px;
+          opacity    : 0.7;
+          cursor     : pointer;
+        ">
+          <input
+            type ="checkbox"
+            name ="remember"
+            style="accent-color:#16a34a;
+                   cursor:pointer"/>
+          Remember me
+        </label>
+        <a href="{{ url_for('forgot_password') }}"
+           style="
+             color          : #4ade80;
+             font-size      : 13px;
+             text-decoration: none;
+             font-weight    : 500;
+           ">
+          Forgot password?
+        </a>
+      </div>
+
+      <!-- Login Button -->
+      <button
+        type="submit"
+        style="
+          width         : 100%;
+          padding       : 13px;
+          background    : #16a34a;
+          color         : #ffffff;
+          border        : none;
+          border-radius : 12px;
+          font-size     : 15px;
+          font-weight   : 700;
+          cursor        : pointer;
+          font-family   :
+            'Inter', sans-serif;
+          letter-spacing: 0.3px;
+          transition    : all 0.2s ease;
+          box-shadow    :
+            0 4px 16px
+            rgba(22,163,74,0.4);
+        "
+        onmouseover="
+          this.style.background='#15803d';
+          this.style.transform=
+            'translateY(-1px)';
+          this.style.boxShadow=
+            '0 6px 20px rgba(22,163,74,0.5)'"
+        onmouseout="
+          this.style.background='#16a34a';
+          this.style.transform='none';
+          this.style.boxShadow=
+            '0 4px 16px rgba(22,163,74,0.4)'">
+        Sign In ⚡
+      </button>
+
+    </form>
+
+    <!-- Divider -->
+    <div style="
+      display    : flex;
+      align-items: center;
+      gap        : 12px;
+      margin     : 24px 0;
+    ">
+      <div style="
+        flex      : 1;
+        height    : 1px;
+        background: rgba(22,163,74,0.15);
+      "></div>
+      <span style="
+        color    : #86efac;
+        font-size: 12px;
+        opacity  : 0.5;
+      ">or</span>
+      <div style="
+        flex      : 1;
+        height    : 1px;
+        background: rgba(22,163,74,0.15);
+      "></div>
+    </div>
+
+    <!-- Register Link -->
+    <p style="
+      text-align : center;
+      font-size  : 14px;
+      color      : #86efac;
+      opacity    : 0.7;
+      margin     : 0;
+    ">
+      Don't have an account?
+      <a href="{{ url_for('register') }}"
+         style="
+           color          : #4ade80;
+           font-weight    : 600;
+           text-decoration: none;
+         ">
+        Create one here →
+      </a>
+    </p>
+
+  </div>
+</div>
+
+<!-- Show/Hide Password Script -->
+<script>
+  function togglePassword() {
+    var input = document.getElementById(
+      'passwordInput');
+    var btn   = document.getElementById(
+      'toggleBtn');
+
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = '🙈';
+    } else {
+      input.type = 'password';
+      btn.textContent = '👁️';
+    }
+  }
+</script>
+
+{% endblock %}

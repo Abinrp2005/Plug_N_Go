@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-cols-4 gap-6">
+  <aside class="col-span-1 bg-card rounded-xl border border-gray-200 p-5 shadow-sm">
+    <h2 class="text-lg font-bold mb-3">Admin Menu</h2>
+    <nav class="space-y-2">
+      <a href="/admin/dashboard" class="block px-3 py-2 rounded-lg hover:bg-lightgreen">🏠 Overview</a>
+      <a href="/admin/stations" class="block px-3 py-2 rounded-lg bg-primary text-white">⚡ Stations</a>
+      <a href="/admin/bookings" class="block px-3 py-2 rounded-lg hover:bg-lightgreen">📋 Bookings</a>
+      <a href="/admin/users" class="block px-3 py-2 rounded-lg hover:bg-lightgreen">👥 Users</a>
+    </nav>
+  </aside>
+
+  <main class="col-span-3 bg-card rounded-xl border border-gray-200 p-6 shadow-sm">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">Manage Stations</h1>
+      <a href="/admin/stations/new" class="bg-primary text-white px-4 py-2 rounded-lg">Add New Station</a>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-3 py-2 text-left text-sm uppercase text-textmuted">Name</th>
+            <th class="px-3 py-2 text-left text-sm uppercase text-textmuted">Location</th>
+            <th class="px-3 py-2 text-left text-sm uppercase text-textmuted">Status</th>
+            <th class="px-3 py-2 text-left text-sm uppercase text-textmuted">Total</th>
+            <th class="px-3 py-2 text-left text-sm uppercase text-textmuted">Available</th>
+            <th class="px-3 py-2 text-left text-sm uppercase text-textmuted">Occupied</th>
+            <th class="px-3 py-2 text-left text-sm uppercase text-textmuted">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white">
+          {% for u in utilization %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-3 py-2">{{ u.station.name }}</td>
+            <td class="px-3 py-2">{{ u.station.location }}</td>
+            <td class="px-3 py-2">{{ u.station.status }}</td>
+            <td class="px-3 py-2">{{ u.total }}</td>
+            <td class="px-3 py-2">{{ u.available }}</td>
+            <td class="px-3 py-2">{{ u.occupied }}</td>
+            <td class="px-3 py-2 flex gap-2 text-sm">
+              <a class="text-primary" href="/admin/stations/edit/{{ u.station.id }}">Edit</a>
+              <a class="text-yellow-700" href="/admin/stations/toggle/{{ u.station.id }}">Toggle</a>
+              <a class="text-danger" href="/admin/stations/delete/{{ u.station.id }}">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+{% endblock %}

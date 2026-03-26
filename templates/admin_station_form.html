@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-cols-4 gap-6">
+  <aside class="col-span-1 bg-card rounded-xl border border-gray-200 p-5 shadow-sm">
+    <h2 class="text-lg font-bold mb-3">Admin Menu</h2>
+    <nav class="space-y-2">
+      <a href="/admin/dashboard" class="block px-3 py-2 rounded-lg hover:bg-lightgreen">🏠 Overview</a>
+      <a href="/admin/stations" class="block px-3 py-2 rounded-lg bg-primary text-white">⚡ Stations</a>
+      <a href="/admin/bookings" class="block px-3 py-2 rounded-lg hover:bg-lightgreen">📋 Bookings</a>
+      <a href="/admin/users" class="block px-3 py-2 rounded-lg hover:bg-lightgreen">👥 Users</a>
+    </nav>
+  </aside>
+
+  <main class="col-span-3 bg-card rounded-xl border border-gray-200 p-6 shadow-sm">
+    <h1 class="text-2xl font-bold mb-4">{{ 'Edit Station' if station else 'Add Station' }}</h1>
+    <form method="post" class="grid gap-4 max-w-xl">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Name</label>
+        <input name="name" value="{{ station.name if station else '' }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+      </div>
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Location</label>
+        <input name="location" value="{{ station.location if station else '' }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs uppercase tracking-wide text-textmuted">Latitude</label>
+          <input type="number" step="any" name="latitude" value="{{ station.latitude if station else '' }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-wide text-textmuted">Longitude</label>
+          <input type="number" step="any" name="longitude" value="{{ station.longitude if station else '' }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+        </div>
+      </div>
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Charger types (comma-separated)</label>
+        <input name="charger_types" value="{{ station.charger_types if station else '' }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs uppercase tracking-wide text-textmuted">Total slots</label>
+          <input type="number" name="total_slots" value="{{ station.total_slots if station else '' }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-wide text-textmuted">Status</label>
+          <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+            <option value="active" {{ 'selected' if station and station.status == 'active' else '' }}>active</option>
+            <option value="inactive" {{ 'selected' if station and station.status == 'inactive' else '' }}>inactive</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-darkgreen">{{ 'Save' if station else 'Create' }}</button>
+    </form>
+  </main>
+</div>
+{% endblock %}

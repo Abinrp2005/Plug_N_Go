@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-cols-4 gap-6">
+  <aside class="col-span-1 bg-card rounded-xl border border-gray-200 p-5 shadow-sm">
+    <h2 class="font-bold mb-3">Notifications</h2>
+    <p class="text-textmuted text-sm">Stay updated about bookings and station status.</p>
+    <form method="post" action="/notifications/readall" class="mt-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <button class="w-full bg-primary text-white px-3 py-2 rounded-lg">Mark all as read</button>
+    </form>
+  </aside>
+  <main class="col-span-3 bg-card rounded-xl border border-gray-200 p-6 shadow-sm">
+    {% if notifications %}
+      <ul class="space-y-3">
+      {% for n in notifications %}
+        <li class="rounded-lg p-4 border {{ 'bg-lightgreen border-green-200' if not n.is_read else 'bg-white border-gray-200' }}">
+          <div class="flex justify-between items-start">
+            <p class="text-sm">{{ n.message }}</p>
+            <span class="text-xs text-textmuted">{{ n.created_at }}</span>
+          </div>
+        </li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <div class="text-center p-10 bg-lightgreen rounded-lg border border-green-200">
+        <p class="text-lg font-semibold">No notifications yet</p>
+        <p class="text-textmuted">We will notify you about booking updates here.</p>
+      </div>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}

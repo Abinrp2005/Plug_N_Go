@@ -1,0 +1,248 @@
+/* ================================
+   PLUG AND GO — BURGER MENU
+================================ */
+
+.burger {
+  z-index: 200;
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.burger:hover {
+  transform: scale(1.1);
+}
+
+.menu {
+  z-index: 150;
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 320px;
+  height: 100%;
+  background: rgba(20, 83, 45, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-left: 1px solid rgba(22, 163, 74, 0.25);
+  box-shadow: -4px 0 40px rgba(22, 163, 74, 0.15), inset 1px 0 0 rgba(22, 163, 74, 0.1);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
+}
+
+.menu nav {
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 75%;
+  gap: 4px;
+  transition: opacity 0.3s ease;
+}
+
+body.open .menu {
+  transform: translateX(0);
+}
+
+body.open .menu nav {
+  opacity: 1;
+}
+
+.menu nav:hover a {
+  opacity: 0.3;
+}
+
+.menu nav a:hover {
+  opacity: 1 !important;
+}
+
+.menu a {
+  position: relative;
+  color: #f0fdf4;
+  font-size: 22px;
+  font-weight: 500;
+  padding: 16px 0;
+  height: 70px;
+  width: 100%;
+  transition: 0.4s;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  font-family: 'Inter', sans-serif;
+}
+
+.menu a::before,
+.menu a::after {
+  content: "";
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transition: 0.4s;
+}
+
+.menu a::before {
+  opacity: 0;
+  background: rgba(22, 163, 74, 0.2);
+  border-radius: 2px;
+}
+
+.menu a::after {
+  transform: scaleX(0);
+  transform-origin: left;
+  background: #16a34a;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(22, 163, 74, 0.6);
+}
+
+.menu a:hover::before { opacity: 1; }
+
+.menu a:hover::after {
+  transform: scaleX(1);
+}
+
+.menu a.logout-link {
+  color: #fca5a5;
+  margin-top: 16px;
+  font-size: 18px;
+  opacity: 0.75;
+}
+
+.menu a.logout-link::after {
+  background: #dc2626;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+}
+
+.menu a.logout-link:hover {
+  color: #f87171;
+  opacity: 1 !important;
+}
+
+body.open .menu a {
+  animation: appear 0.25s backwards;
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.burger-icon {
+  position: relative;
+  display: block;
+  width: 26px;
+  height: 2px;
+  background: #4ade80;
+  border-radius: 2px;
+  transition: 0.3s;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+}
+
+.burger-icon::before,
+.burger-icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 26px;
+  height: 2px;
+  background: #4ade80;
+  border-radius: 2px;
+  transition: 0.3s;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+}
+
+.burger-icon::before { top: -8px; }
+.burger-icon::after { top: 8px; }
+
+body.open .burger-icon {
+  transform: rotate(-45deg);
+  background: #16a34a;
+  box-shadow: 0 0 12px rgba(22, 163, 74, 0.7);
+}
+
+body.open .burger-icon::before {
+  transform: rotate(90deg) translate(8px, 0);
+  background: #16a34a;
+}
+
+body.open .burger-icon::after {
+  opacity: 0;
+}
+
+.menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 140;
+  animation: fadeIn 0.3s ease;
+}
+
+body.open .menu-overlay {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.menu::before {
+  content: "⚡ Plug & Go";
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 17px;
+  font-weight: 700;
+  color: #4ade80;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  text-shadow: 0 0 12px rgba(74, 222, 128, 0.5);
+  font-family: 'Inter', sans-serif;
+}
+
+.menu::after {
+  content: attr(data-user);
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: #86efac;
+  opacity: 0.6;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.menu a.menu-active {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.menu a.menu-active::after {
+  transform: scaleX(1);
+  background: #16a34a;
+}

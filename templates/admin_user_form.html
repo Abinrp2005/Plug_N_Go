@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Edit User</h1>
+<form method="post" class="grid gap-3 max-w-lg bg-white p-4 rounded shadow">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+  <div><label class="font-semibold">Name</label><input name="name" value="{{ user.name }}" required class="border p-2 rounded w-full" /></div>
+  <div><label class="font-semibold">Email</label><input value="{{ user.email }}" disabled class="border p-2 rounded w-full bg-gray-100" /></div>
+  <div><label class="font-semibold">Phone</label><input name="phone" value="{{ user.phone }}" required class="border p-2 rounded w-full" /></div>
+  <div><label class="font-semibold">Vehicle Type</label><input name="vehicle_type" value="{{ user.vehicle_type }}" required class="border p-2 rounded w-full" /></div>
+  <div><label class="font-semibold">Vehicle Model</label><input name="vehicle_model" value="{{ user.vehicle_model }}" required class="border p-2 rounded w-full" /></div>
+  <button type="submit" class="bg-blue-600 text-white p-2 rounded">Update User</button>
+</form>
+{% endblock %}

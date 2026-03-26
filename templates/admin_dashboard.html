@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-cols-4 gap-6">
+  <aside class="col-span-1 bg-card rounded-xl border border-gray-200 p-5 shadow-sm">
+    <h2 class="text-lg font-bold mb-3">Admin Panel</h2>
+    <nav class="space-y-2">
+      <a href="/admin/dashboard" class="block px-3 py-2 rounded-lg {{ 'bg-primary text-white' if request.path.startswith('/admin/dashboard') else 'hover:bg-lightgreen' }}">🏠 Overview</a>
+      <a href="/admin/stations" class="block px-3 py-2 rounded-lg {{ 'bg-primary text-white' if request.path.startswith('/admin/stations') else 'hover:bg-lightgreen' }}">⚡ Stations</a>
+      <a href="/admin/bookings" class="block px-3 py-2 rounded-lg {{ 'bg-primary text-white' if request.path.startswith('/admin/bookings') else 'hover:bg-lightgreen' }}">📋 Bookings</a>
+      <a href="/admin/users" class="block px-3 py-2 rounded-lg {{ 'bg-primary text-white' if request.path.startswith('/admin/users') else 'hover:bg-lightgreen' }}">👥 Users</a>
+    </nav>
+  </aside>
+  <main class="col-span-3 bg-card rounded-xl border border-gray-200 p-6 shadow-sm">
+    <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
+    <div class="grid gap-4 md:grid-cols-3 mb-6">
+      <div class="bg-lightgreen p-4 rounded-xl border border-green-100 text-center">
+        <p class="text-3xl font-bold">{{ station_count }}</p>
+        <p class="text-sm text-textmuted">Total Stations</p>
+      </div>
+      <div class="bg-lightgreen p-4 rounded-xl border border-green-100 text-center">
+        <p class="text-3xl font-bold">{{ bookings_count }}</p>
+        <p class="text-sm text-textmuted">Total Bookings</p>
+      </div>
+      <div class="bg-lightgreen p-4 rounded-xl border border-green-100 text-center">
+        <p class="text-3xl font-bold">{{ user_count }}</p>
+        <p class="text-sm text-textmuted">Active Users</p>
+      </div>
+    </div>
+    <div class="grid gap-3 md:grid-cols-3">
+      <a href="/admin/stations" class="bg-primary text-white p-3 rounded-lg text-center">Manage Stations</a>
+      <a href="/admin/bookings" class="bg-primary text-white p-3 rounded-lg text-center">View Bookings</a>
+      <a href="/admin/users" class="bg-primary text-white p-3 rounded-lg text-center">Manage Users</a>
+    </div>
+  </main>
+</div>
+{% endblock %}

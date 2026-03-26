@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  /* MAP DIV — explicit height is CRITICAL */
+  #map {
+    width         : 100%;
+    height        : 550px;
+    border-radius : 16px;
+    border        : 1px solid rgba(22,163,74,0.2);
+    display       : block;
+    background    : #1a3d28;
+    z-index       : 0;
+    pointer-events: all !important;
+    cursor        : grab;
+  }
+
+  #map:active {
+    cursor: grabbing;
+  }
+  .gm-style .gm-control-active { pointer-events: auto; }
+</style>
+
+<section class="bg-gradient-to-r from-darkgreen via-primary to-[#22c55e] text-white rounded-2xl p-10 mb-8 shadow-glow">
+  <div class="max-w-7xl mx-auto grid grid-cols-2 gap-8">
+    <div class="space-y-4">
+      <h1 class="text-4xl font-bold tracking-tight">Charge Smarter. Drive Further.</h1>
+      <p class="text-lg text-white/90">Find, book and manage EV charging stations across South India — instantly.</p>
+      <div class="flex items-center gap-3">
+        <a href="{{ url_for('stations') }}" class="bg-card text-darkgreen font-semibold px-7 py-3 rounded-lg shadow hover:shadow-md transition">Find a Station</a>
+        <a href="#how-it-works" class="border border-white/80 text-white px-7 py-3 rounded-lg hover:bg-white/20 transition">Learn More</a>
+      </div>
+    </div>
+    <div class="relative">
+      <div class="absolute inset-0 opacity-40 bg-[url('https://cdn-icons-png.flaticon.com/512/2378/2378315.png')] bg-right-bottom bg-no-repeat"></div>
+      <div class="relative p-8 bg-white/20 rounded-xl">
+        <p class="text-white font-semibold">⚡ Modern EV</p>
+        <p class="text-sm text-white/90 mt-2">Enjoy fast charging at all partner locations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+  <div class="grid grid-cols-4 gap-4 text-center">
+    <div class="border-r border-gray-100 px-3">
+      <p class="text-2xl">⚡</p>
+      <p class="font-semibold">8 Stations</p>
+    </div>
+    <div class="border-r border-gray-100 px-3">
+      <p class="text-2xl">🔌</p>
+      <p class="font-semibold">14 Slots</p>
+    </div>
+    <div class="border-r border-gray-100 px-3">
+      <p class="text-2xl">👥</p>
+      <p class="font-semibold">10+ Users</p>
+    </div>
+    <div class="px-3">
+      <p class="text-2xl">📍</p>
+      <p class="font-semibold">5 States</p>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" class="grid grid-cols-3 gap-6 mb-8">
+  <div class="bg-lightgreen border border-green-200 rounded-xl p-6 shadow-sm transition hover:shadow-md hover:-translate-y-1">
+    <p class="text-3xl">🔍</p>
+    <h3 class="font-bold mt-3">Find a Station</h3>
+    <p class="text-sm text-textmuted">Search by location, charger type or availability.</p>
+  </div>
+  <div class="bg-lightgreen border border-green-200 rounded-xl p-6 shadow-sm transition hover:shadow-md hover:-translate-y-1">
+    <p class="text-3xl">📅</p>
+    <h3 class="font-bold mt-3">Book a Slot</h3>
+    <p class="text-sm text-textmuted">Pick date, time and reserve instantly.</p>
+  </div>
+  <div class="bg-lightgreen border border-green-200 rounded-xl p-6 shadow-sm transition hover:shadow-md hover:-translate-y-1">
+    <p class="text-3xl">⚡</p>
+    <h3 class="font-bold mt-3">Charge & Go</h3>
+    <p class="text-sm text-textmuted">Arrive, charge and be on your way.</p>
+  </div>
+</section>
+
+<section class="mb-8">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold">Featured Stations</h2>
+    <a href="#stations-section" class="text-primary font-semibold">View All Stations →</a>
+  </div>
+  <div class="grid sm:grid-cols-3 gap-5">
+    {% for station in stations[:3] %}
+      <div class="bg-card rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
+        <div class="flex justify-between items-start gap-3">
+          <div>
+            <h3 class="font-semibold text-lg">{{ station.name }}</h3>
+            <p class="text-textmuted text-sm">{{ station.location }}</p>
+          </div>
+          <span class="text-xs bg-green-100 text-darkgreen rounded-full px-2 py-1">{{ station.available_slots or 0 }} available</span>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          {% for ct in station.charger_types.split(',') %}
+            <span class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-700">{{ ct.strip() }}</span>
+          {% endfor %}
+        </div>
+        <a href="/station/{{ station.id }}" class="mt-4 inline-block text-sm font-semibold text-white bg-primary px-4 py-2 rounded-lg hover:bg-darkgreen">Book Now</a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="stations-section" class="grid grid-cols-[40%_60%] gap-6">
+  <aside class="bg-card rounded-xl border border-gray-100 p-5 shadow-sm h-[80vh] overflow-y-auto">
+    <h3 class="font-bold text-lg mb-4">Search Stations</h3>
+    <div class="space-y-3">
+      <div class="relative">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-textmuted">🔍</span>
+        <input id="searchInput" type="text" placeholder="Name or location" class="w-full pl-9 border border-gray-200 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-primary" />
+      </div>
+      <div class="relative">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-textmuted">⚡</span>
+        <select id="charger-filter" class="w-full pl-9 border border-gray-200 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+          <option value="">All Charger Types</option>
+          <option value="AC Level 2">AC Level 2</option>
+          <option value="DC Fast Charging">DC Fast Charging</option>
+          <option value="CCS">CCS</option>
+          <option value="CHAdeMO">CHAdeMO</option>
+          <option value="Type 2">Type 2</option>
+          <option value="Bharat AC">Bharat AC</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="inline-flex items-center gap-2 text-sm">
+          <div class="w-10 h-5 rounded-full bg-gray-200 relative">
+            <input id="availableOnly" type="checkbox" class="hidden peer" />
+            <span class="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white transition peer-checked:translate-x-5"></span>
+          </div>
+          <span class="text-textmuted">Available Only</span>
+        </label>
+      </div>
+      <div class="flex gap-2">
+        <button id="searchBtn" class="w-full bg-primary text-white rounded-lg py-2 hover:bg-darkgreen">Search</button>
+        <button id="resetBtn" class="w-full border border-gray-300 rounded-lg py-2 text-textdark hover:bg-gray-100">Reset</button>
+      </div>
+      <p id="resultCount" class="text-sm text-textmuted">Showing <span id="countNum">0</span> station(s)</p>
+    </div>
+
+    <div id="station-cards" class="mt-5 space-y-3"></div>
+  </aside>
+
+  <section id="map-section" class="rounded-xl overflow-hidden border border-gray-100 shadow-sm relative">
+    <div id="map"></div>
+    <button onclick="resetMap()" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] bg-primary text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg hover:bg-darkgreen transition">📍 Kasaragod</button>
+  </section>
+</section>
+
+<script>
+  var KASARAGOD_LAT = 12.4996;
+  var KASARAGOD_LNG = 74.9869;
+
+  var map = L.map('map', {
+    center     : [KASARAGOD_LAT, KASARAGOD_LNG],
+    zoom       : 12,
+    zoomControl: true
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom    : 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  var greenIcon = L.divIcon({
+    className : '',
+    html      : `<div style="width:24px;height:24px;background:#16a34a;border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 5px rgba(0,0,0,0.2);"></div>`,
+    iconSize  : [24, 24],
+    iconAnchor: [12, 24]
+  });
+
+  var redIcon = L.divIcon({
+    className : '',
+    html      : `<div style="width:24px;height:24px;background:#dc2626;border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 5px rgba(0,0,0,0.2);"></div>`,
+    iconSize  : [24, 24],
+    iconAnchor: [12, 24]
+  });
+
+  var markers = [];
+
+  function resetMap() { map.setView([KASARAGOD_LAT, KASARAGOD_LNG], 12); }
+  function focusMarker(lat, lng) { map.setView([lat, lng], 15); }
+
+  function searchStations() {
+    const q = document.getElementById('searchInput').value;
+    const charger = document.getElementById('charger-filter').value;
+    const available = document.getElementById('availableOnly').checked;
+
+    fetch(`/api/stations/search?q=${encodeURIComponent(q)}&charger_type=${encodeURIComponent(charger)}&available_only=${available}`)
+      .then(r => r.json())
+      .then(renderStations);
+  }
+
+  function renderStations(stations) {
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+    
+    const container = document.getElementById('station-cards');
+    const countNum = document.getElementById('countNum');
+    container.innerHTML = '';
+    countNum.innerText = stations.length;
+
+    if (stations.length === 0) {
+      container.innerHTML = '<p class="text-center text-textmuted py-10">No stations found.</p>';
+      return;
+    }
+
+    const bounds = [];
+    stations.forEach(s => {
+      const pos = [s.latitude, s.longitude];
+      bounds.push(pos);
+      
+      const icon = s.available_slots > 0 ? greenIcon : redIcon;
+      const marker = L.marker(pos, {icon}).addTo(map);
+      marker.bindPopup(`<div class="p-2"><h4 class="font-bold text-primary">${s.name}</h4><p class="text-xs text-textmuted">${s.location}</p><a href="/book/${s.id}" class="block mt-2 text-center bg-primary text-white text-xs py-1 rounded">Book Now</a></div>`);
+      markers.push(marker);
+
+      const card = document.createElement('div');
+      card.className = 'bg-white border border-gray-100 rounded-lg p-3 shadow-sm hover:border-primary cursor-pointer transition';
+      card.onclick = () => focusMarker(s.latitude, s.longitude);
+      card.innerHTML = `
+        <div class="flex justify-between items-start">
+          <h4 class="font-bold text-sm">${s.name}</h4>
+          <span class="text-[10px] ${s.available_slots > 0 ? 'text-primary bg-green-50' : 'text-danger bg-red-50'} px-1.5 py-0.5 rounded-full">${s.available_slots} slots</span>
+        </div>
+        <p class="text-[11px] text-textmuted mt-1">📍 ${s.location}</p>
+      `;
+      container.appendChild(card);
+    });
+
+    if (bounds.length > 0) map.fitBounds(bounds, {padding: [50, 50]});
+  }
+
+  document.getElementById('searchBtn').onclick = searchStations;
+  document.getElementById('resetBtn').onclick = () => {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('charger-filter').value = '';
+    document.getElementById('availableOnly').checked = false;
+    searchStations();
+  };
+  
+  // Initial load
+  searchStations();
+</script>
+    
+{% endblock %}

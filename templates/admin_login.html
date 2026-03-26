@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center">
+  <div class="bg-card rounded-2xl border border-gray-200 shadow-xl p-10 max-w-md w-full">
+    <h1 class="text-3xl font-bold text-textdark mb-4">Admin Login</h1>
+    <form method="POST" class="grid gap-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Email</label>
+        <input type="email" name="email" placeholder="Admin Email" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary" />
+      </div>
+      <div>
+        <label class="text-xs uppercase tracking-wide text-textmuted">Password</label>
+        <input type="password" name="password" placeholder="Password" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary" />
+      </div>
+      <button type="submit" class="w-full bg-primary text-white rounded-lg py-2.5 hover:bg-darkgreen">Login as Admin</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

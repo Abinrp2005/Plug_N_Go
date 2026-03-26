@@ -1,0 +1,476 @@
+{% extends "base.html" %}
+{% block title %}
+  Stations — Plug and Go
+{% endblock %}
+
+{% block content %}
+
+<div class="stations-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1 class="page-title">
+      ⚡ Charging Stations
+    </h1>
+    <p class="page-subtitle">
+      Find and book EV charging stations 
+      across South India — instantly.
+    </p>
+  </div>
+
+  <!-- SEARCH BAR -->
+  <div class="search-card">
+    <div class="search-row">
+
+      <div class="search-input-wrap">
+        <span>🔍</span>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search by name or city..."
+          onkeypress="if(event.key==='Enter') searchStations()"/>
+      </div>
+
+      <select id="chargerFilter" onchange="searchStations()">
+        <option value="">
+          All Charger Types
+        </option>
+        <option value="AC Level 2">
+          AC Level 2
+        </option>
+        <option value="DC Fast Charging">
+          DC Fast Charging
+        </option>
+        <option value="CCS">CCS</option>
+        <option value="CHAdeMO">CHAdeMO</option>
+        <option value="Type 2">Type 2</option>
+        <option value="Bharat AC">Bharat AC</option>
+      </select>
+
+      <label class="avail-toggle">
+        <input type="checkbox"
+               id="availableOnly"
+               onchange="searchStations()"/>
+        Available Only
+      </label>
+
+      <button onclick="searchStations()">
+        Search
+      </button>
+
+    </div>
+  </div>
+
+  <!-- TWO COLUMN: Cards + Map -->
+  <div class="stations-layout">
+
+    <!-- LEFT: Station Cards -->
+    <div id="stationCards" class="station-cards">
+      <div class="loading-msg">
+        ⚡ Loading stations...
+      </div>
+    </div>
+
+    <!-- RIGHT: Leaflet Map -->
+    <div class="map-wrap">
+
+      <!-- MAP DIV with explicit height -->
+      <div id="map"
+           style="
+             height        : 560px;
+             width         : 100%;
+             border-radius : 14px;
+             z-index       : 0;
+             border        : 1px solid rgba(22,163,74,0.25);
+             box-shadow    : 0 4px 20px rgba(0,0,0,0.3);
+           ">
+      </div>
+
+      <button onclick="resetMap()" class="reset-btn">
+        📍 Kasaragod
+      </button>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- PAGE STYLES -->
+<style>
+  .stations-page {
+    padding-bottom: 48px;
+  }
+
+  .search-card {
+    background   : #122318;
+    border       : 1px solid rgba(22,163,74,0.15);
+    border-radius: 14px;
+    padding      : 18px 22px;
+    margin-bottom: 22px;
+  }
+
+  .search-row {
+    display     : flex;
+    gap         : 10px;
+    align-items : center;
+    flex-wrap   : wrap;
+  }
+
+  .search-input-wrap {
+    flex        : 1;
+    display     : flex;
+    align-items : center;
+    gap         : 8px;
+    background  : #1e4d30;
+    border      : 1px solid rgba(22,163,74,0.2);
+    border-radius: 10px;
+    padding     : 0 14px;
+    min-width   : 200px;
+  }
+
+  .search-input-wrap input {
+    flex        : 1;
+    background  : transparent;
+    border      : none;
+    outline     : none;
+    color       : #f0fdf4;
+    font-size   : 14px;
+    padding     : 10px 0;
+    font-family : 'Inter', sans-serif;
+  }
+
+  .search-input-wrap input::placeholder{
+    color   : #86efac;
+    opacity : 0.5;
+  }
+
+  .search-row select {
+    padding      : 10px 14px;
+    background   : #1e4d30;
+    border       : 1px solid rgba(22,163,74,0.2);
+    border-radius: 10px;
+    color        : #f0fdf4;
+    font-size    : 14px;
+    outline      : none;
+    cursor       : pointer;
+    font-family  : 'Inter', sans-serif;
+  }
+
+  .avail-toggle {
+    display     : flex;
+    align-items : center;
+    gap         : 7px;
+    color       : #86efac;
+    font-size   : 14px;
+    cursor      : pointer;
+    white-space : nowrap;
+  }
+
+  .avail-toggle input {
+    width       : 15px;
+    height      : 15px;
+    accent-color: #16a34a;
+    cursor      : pointer;
+  }
+
+  .search-row button {
+    padding      : 10px 22px;
+    background   : #16a34a;
+    color        : #fff;
+    border       : none;
+    border-radius: 10px;
+    font-size    : 14px;
+    font-weight  : 600;
+    cursor       : pointer;
+    font-family  : 'Inter', sans-serif;
+    transition   : all 0.2s ease;
+    white-space  : nowrap;
+  }
+
+  .search-row button:hover {
+    background : #15803d;
+    transform  : scale(1.03);
+  }
+
+  .stations-layout {
+    display              : grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap                  : 22px;
+    align-items          : start;
+  }
+
+  .station-cards {
+    display        : flex;
+    flex-direction : column;
+    gap            : 14px;
+    max-height     : 560px;
+    overflow-y     : auto;
+    padding-right  : 4px;
+  }
+
+  .station-cards::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .station-cards::-webkit-scrollbar-thumb {
+    background    : #16a34a;
+    border-radius : 4px;
+  }
+
+  .s-card {
+    background    : #122318;
+    border        : 1px solid rgba(22,163,74,0.12);
+    border-left   : 4px solid #16a34a;
+    border-radius : 12px;
+    padding       : 14px 16px;
+    cursor        : pointer;
+    transition    : all 0.2s ease;
+  }
+
+  .s-card:hover {
+    border-left-color : #4ade80;
+    transform         : translateX(4px);
+    box-shadow        : 0 4px 16px rgba(22,163,74,0.12);
+  }
+
+  .s-card h3 {
+    color        : #f0fdf4;
+    font-size    : 15px;
+    font-weight  : 600;
+    margin       : 0 0 5px 0;
+  }
+
+  .s-card .s-loc {
+    color      : #86efac;
+    font-size  : 13px;
+    opacity    : 0.7;
+    margin     : 0 0 8px 0;
+  }
+
+  .s-footer {
+    display         : flex;
+    justify-content : space-between;
+    align-items     : center;
+    margin-top      : 8px;
+  }
+
+  .avail-pill {
+    font-size    : 11px;
+    font-weight  : 600;
+    padding      : 3px 10px;
+    border-radius: 20px;
+  }
+
+  .avail-pill.yes {
+    background : rgba(22,163,74,0.15);
+    color      : #4ade80;
+    border     : 1px solid rgba(22,163,74,0.3);
+  }
+
+  .avail-pill.no {
+    background : rgba(220,38,38,0.15);
+    color      : #f87171;
+    border     : 1px solid rgba(220,38,38,0.3);
+  }
+
+  .s-btns {
+    display : flex;
+    gap     : 8px;
+  }
+
+  .s-btns .btn-map {
+    padding      : 5px 11px;
+    border       : 1px solid #16a34a;
+    background   : transparent;
+    color        : #4ade80;
+    border-radius: 7px;
+    font-size    : 12px;
+    cursor       : pointer;
+    font-family  : 'Inter', sans-serif;
+    transition   : all 0.2s ease;
+  }
+
+  .s-btns .btn-map:hover {
+    background : rgba(22,163,74,0.1);
+  }
+
+  .s-btns .btn-book {
+    padding         : 5px 13px;
+    background      : #16a34a;
+    color           : #fff;
+    border          : none;
+    border-radius   : 7px;
+    font-size       : 12px;
+    font-weight     : 600;
+    cursor          : pointer;
+    font-family     : 'Inter', sans-serif;
+    text-decoration : none;
+    display         : inline-block;
+    transition      : all 0.2s ease;
+  }
+
+  .s-btns .btn-book:hover {
+    background : #15803d;
+  }
+
+  .map-wrap {
+    position : relative;
+  }
+
+  .reset-btn {
+    position      : absolute;
+    bottom        : 16px;
+    left          : 50%;
+    transform     : translateX(-50%);
+    background    : #16a34a;
+    color         : #fff;
+    border        : none;
+    padding       : 7px 18px;
+    border-radius : 20px;
+    font-size     : 13px;
+    font-weight   : 600;
+    cursor        : pointer;
+    font-family   : 'Inter', sans-serif;
+    box-shadow    : 0 4px 12px rgba(0,0,0,0.4);
+    z-index       : 999;
+    transition    : all 0.2s ease;
+    white-space   : nowrap;
+  }
+
+  .reset-btn:hover {
+    background : #15803d;
+    transform  : translateX(-50%) scale(1.05);
+  }
+
+  .loading-msg {
+    text-align : center;
+    padding    : 40px;
+    color      : #86efac;
+    opacity    : 0.6;
+    font-size  : 14px;
+  }
+
+  .empty-msg {
+    text-align : center;
+    padding    : 40px 20px;
+    color      : #86efac;
+    opacity    : 0.6;
+  }
+
+  .empty-msg p:first-child {
+    font-size    : 32px;
+    margin-bottom: 8px;
+  }
+</style>
+
+<!-- LEAFLET MAP JAVASCRIPT -->
+<script>
+  var KASARAGOD_LAT = 12.4996;
+  var KASARAGOD_LNG = 74.9869;
+
+  var map = L.map('map', {
+    center     : [KASARAGOD_LAT, KASARAGOD_LNG],
+    zoom       : 11,
+    zoomControl: true,
+    dragging   : true,
+    scrollWheelZoom: true
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom    : 19,
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+
+  var greenIcon = L.divIcon({
+    className : '',
+    html      : `<div style="width:28px;height:28px;background:#16a34a;border:3px solid #f0fdf4;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(22,163,74,0.5);"></div>`,
+    iconSize  : [28, 28],
+    iconAnchor: [14, 28]
+  });
+
+  var redIcon = L.divIcon({
+    className : '',
+    html      : `<div style="width:28px;height:28px;background:#dc2626;border:3px solid #f0fdf4;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(220,38,38,0.5);"></div>`,
+    iconSize  : [28, 28],
+    iconAnchor: [14, 28]
+  });
+
+  var currentMarkers = [];
+
+  function resetMap() {
+    map.setView([KASARAGOD_LAT, KASARAGOD_LNG], 11);
+  }
+
+  function focusMarker(lat, lng) {
+    map.setView([parseFloat(lat), parseFloat(lng)], 15);
+  }
+
+  function searchStations() {
+    var q = document.getElementById('searchInput').value;
+    var charger = document.getElementById('chargerFilter').value;
+    var available = document.getElementById('availableOnly').checked;
+
+    var url = '/api/stations/search?q=' + encodeURIComponent(q) + '&charger_type=' + encodeURIComponent(charger) + '&available_only=' + (available ? 'true' : 'false');
+
+    fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(renderStations)
+      .catch(function(err) {
+        console.error('❌ Station load error:', err);
+      });
+  }
+
+  function renderStations(stations) {
+    currentMarkers.forEach(function(m) {
+      map.removeLayer(m);
+    });
+    currentMarkers = [];
+
+    var cardsDiv = document.getElementById('stationCards');
+    cardsDiv.innerHTML = '';
+
+    if (!stations || stations.length === 0) {
+      cardsDiv.innerHTML = `<div class="empty-msg"><p>🔌</p><p>No stations found.</p><p style="font-size:12px;margin-top:4px">Try different search terms.</p></div>`;
+      resetMap();
+      return;
+    }
+
+    var latLngs = [];
+
+    stations.forEach(function(s) {
+      var lat = parseFloat(s.latitude);
+      var lng = parseFloat(s.longitude);
+      var pos = [lat, lng];
+      latLngs.push(pos);
+
+      var icon = s.available_slots > 0 ? greenIcon : redIcon;
+
+      var marker = L.marker(pos, { icon: icon, title: s.name}).addTo(map);
+      marker.bindPopup(`<div style="font-family:'Inter',sans-serif;min-width:180px;padding:4px"><h3 style="color:#16a34a;font-weight:700;margin:0 0 6px 0;font-size:14px;">${s.name}</h3><p style="font-size:12px;color:#444;margin:0 0 4px 0;">📍 ${s.location}</p><p style="font-size:12px;color:#444;margin:0 0 8px 0;">⚡ ${s.charger_types}</p><p style="font-size:12px;font-weight:600;color:${s.available_slots > 0 ? '#16a34a' : '#dc2626'};margin:0 0 10px 0;">${s.available_slots > 0 ? '🟢 ' + s.available_slots + ' slot(s) available' : '🔴 Fully Booked'}</p><a href="/book/${s.id}" style="display:block;background:#16a34a;color:#fff;text-align:center;padding:7px 0;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">Book Now →</a></div>`);
+      currentMarkers.push(marker);
+
+      var available = s.available_slots > 0;
+      cardsDiv.innerHTML += `<div class="s-card" onclick="focusMarker(${lat}, ${lng})"><h3>⚡ ${s.name}</h3><p class="s-loc">📍 ${s.location}</p><p style="font-size:12px;color:#86efac;opacity:0.6;margin:0 0 8px 0">🔌 ${s.charger_types}</p><div class="s-footer"><span class="avail-pill ${available ? 'yes' : 'no'}">${available ? '✅ '+s.available_slots+' Available' : '❌ Full'}</span><div class="s-btns"><button class="btn-map" onclick="event.stopPropagation();focusMarker(${lat},${lng})">🗺️ Map</button><a href="/book/${s.id}" class="btn-book" onclick="event.stopPropagation()">Book →</a></div></div></div>`;
+    });
+
+    if (latLngs.length === 1) {
+      map.setView(latLngs[0], 14);
+    } else if (latLngs.length > 1) {
+      map.fitBounds(latLngs, { padding: [30, 30] });
+    }
+  }
+
+  function loadAllStations() {
+    fetch('/api/stations/search')
+      .then(function(r) { return r.json(); })
+      .then(renderStations)
+      .catch(function(err) {
+        console.error('❌ Failed to load:', err);
+        document.getElementById('stationCards').innerHTML = `<div class="empty-msg"><p>⚠️</p><p>Could not load stations.</p><p style="font-size:12px">Check your /api/stations/search route in app.py</p></div>`;
+      });
+  }
+
+  loadAllStations();
+</script>
+
+{% endblock %}

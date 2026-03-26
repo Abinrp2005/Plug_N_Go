@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-cols-3 gap-8">
+  <div class="col-span-2 bg-card rounded-xl border border-gray-200 p-6 shadow-sm">
+    <h1 class="text-2xl font-bold mb-4">Book Slot at {{ station.name }}</h1>
+    {% if not available_slots %}
+      <div class="p-4 bg-yellow-100 rounded-lg">No available slots right now.</div>
+    {% else %}
+      <div class="flex items-center gap-3 mb-5">
+        <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">Step 1</span>
+        <span class="text-sm text-textmuted">Select slot, time and confirm</span>
+      </div>
+      <form method="POST" class="space-y-4" id="bookingForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        <div>
+          <label class="text-xs uppercase tracking-wide text-textmuted">Choose slot</label>
+          <select name="slot_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary"> 
+            {% for slot in available_slots %}
+              <option value="{{ slot.id }}">{{ slot.slot_number }} ({{ slot.charger_type }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs uppercase tracking-wide text-textmuted">Booking date</label>
+            <input type="date" name="booking_date" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary" />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-wide text-textmuted">Duration</label>
+            <div class="grid grid-cols-4 gap-2 mt-1">
+              <button type="button" class="duration-btn text-xs py-2 rounded-lg border border-gray-300">1 hr</button>
+              <button type="button" class="duration-btn text-xs py-2 rounded-lg border border-gray-300">2 hrs</button>
+              <button type="button" class="duration-btn text-xs py-2 rounded-lg border border-gray-300">3 hrs</button>
+              <button type="button" class="duration-btn text-xs py-2 rounded-lg border border-gray-300">4 hrs</button>
+            </div>
+            <input id="durationInput" name="duration" type="hidden" value="1" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs uppercase tracking-wide text-textmuted">Start time</label>
+            <input type="time" name="start_time" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary" />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-wide text-textmuted">End time</label>
+            <input type="time" name="end_time" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary" />
+          </div>
+        </div>
+
+        <div class="p-4 bg-lightgreen rounded-lg border border-green-200">
+          <p class="text-sm">Price per hour: <strong>₹150</strong></p>
+          <p class="text-sm">Estimated Total: <strong id="estimatedPrice">₹150</strong> for <span id="selectedDuration">1</span> hour</p>
+        </div>
+
+        <div class="flex gap-3">
+          <button type="submit" class="bg-primary text-white rounded-lg px-6 py-2 hover:bg-darkgreen">Confirm Booking</button>
+          <a href="/" class="border border-gray-300 text-textdark rounded-lg px-6 py-2">Cancel</a>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+
+  <aside class="bg-card rounded-xl border border-gray-200 p-6 shadow-sm sticky top-24 h-fit">
+    <h2 class="text-xl font-bold mb-2">Station Summary</h2>
+    <p class="text-textmuted mb-3">{{ station.location }}</p>
+    <p class="mb-1"><span class="font-semibold">Charger:</span> {{ station.charger_types }}</p>
+    <p class="mb-1"><span class="font-semibold">Available slots:</span> {{ station.available_slots or 0 }}</p>
+    <p class="mb-1"><span class="font-semibold">Price:</span> ₹150 / hour</p>
+    <div class="mt-4 h-32 rounded-lg bg-gray-100 flex items-center justify-center text-textmuted">Map Thumbnail</div>
+  </aside>
+</div>
+
+<script>
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementsByName('booking_date')[0];
+  if (dateInput) {
+    dateInput.setAttribute('min', today);
+    dateInput.value = today;
+  }
+
+  const durationButtons = document.querySelectorAll('.duration-btn');
+  const durationInput = document.getElementById('durationInput');
+  const selectedDuration = document.getElementById('selectedDuration');
+  const estimatedPrice = document.getElementById('estimatedPrice');
+
+  durationButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      durationButtons.forEach(b => b.classList.remove('bg-primary','text-white'));
+      btn.classList.add('bg-primary','text-white');
+      const hrs = Number(btn.textContent.split(' ')[0]);
+      durationInput.value = hrs;
+      selectedDuration.textContent = hrs;
+      estimatedPrice.textContent = `₹${hrs * 150}`;
+    });
+  });
+
+  document.querySelector('.duration-btn').classList.add('bg-primary','text-white');
+</script>
+{% endblock %}
